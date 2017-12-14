@@ -18,31 +18,35 @@ public class TestProdCons extends Simulateur {
 		super(observateur);
 	}
 
-	protected void run() throws Exception{
-	// le corps de votre programme principal
+	protected void run() throws Exception {
+		// le corps de votre programme principal
 		String fileName = "options.xml";
 		init("jus/poc/prodcons/options/" + fileName);
-		// creer buffer 
+		// creer buffer
 		ProdCons buffer = new ProdCons();
 		// creer prod et consomateurs et les demarrer
-		
-		
+		System.out.println(nbProd);
+		System.out.println(nbCons);
+		System.out.println(nbBuffer);
+		System.out.println(tempsMoyenProduction);
 		// gerer la condition de terminaison
-		
+
 	}
+
 	/**
 	 * Retreave the parameters of the application.
 	 * 
 	 * @param file
 	 *            the final name of the file containing the options.
-	 * @throws IOException 
-	 * @throws InvalidPropertiesFormatException 
-	 * @throws SecurityException 
-	 * @throws NoSuchFieldException 
-	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
+	 * @throws IOException
+	 * @throws InvalidPropertiesFormatException
+	 * @throws SecurityException
+	 * @throws NoSuchFieldException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
 	 */
-	protected void init(String file) throws InvalidPropertiesFormatException, IOException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+	protected void init(String file) throws InvalidPropertiesFormatException, IOException, IllegalArgumentException,
+			IllegalAccessException, NoSuchFieldException, SecurityException {
 		Properties properties = new Properties();
 		properties.loadFromXML(ClassLoader.getSystemResourceAsStream(file));
 		String key;
