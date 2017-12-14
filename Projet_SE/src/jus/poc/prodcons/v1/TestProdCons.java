@@ -25,10 +25,6 @@ public class TestProdCons extends Simulateur {
 		// creer buffer
 		ProdCons buffer = new ProdCons();
 		// creer prod et consomateurs et les demarrer
-		System.out.println(nbProd);
-		System.out.println(nbCons);
-		System.out.println(nbBuffer);
-		System.out.println(tempsMoyenProduction);
 		// gerer la condition de terminaison
 
 	}
