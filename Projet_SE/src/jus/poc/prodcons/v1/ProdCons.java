@@ -26,13 +26,6 @@ public class ProdCons implements Tampon {
 	@Override
 	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
 		MessageX message;
-		while (enAttente() == 0) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 		message = buffer.remove(0);
 		notifyAll();
 		return message;

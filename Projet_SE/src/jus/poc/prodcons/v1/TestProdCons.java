@@ -52,14 +52,9 @@ public class TestProdCons extends Simulateur {
 			currentCons.start();
 			listCons.add(currentCons);
 		}
-		for (int i = 0; i < nbProd; i++) {
-			listProd.get(i).join();
-		}
 
 		for (int i = 0; i < nbCons; i++) {
 			listCons.get(i).join();
-			listCons.get(i).notifyAll();
-
 		}
 		// TODO :gerer la condition de terminaison
 	}
