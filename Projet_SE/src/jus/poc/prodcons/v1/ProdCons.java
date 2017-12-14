@@ -1,4 +1,4 @@
-package projet;
+package jus.poc.prodcons.v1;
 
 import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Tampon;
@@ -11,7 +11,7 @@ public class ProdCons implements Tampon {
 	@Override
 	public int enAttente() {
 		// TODO Auto-generated method stub
-		return ;
+		return 0;
 	}
 
 	@Override
