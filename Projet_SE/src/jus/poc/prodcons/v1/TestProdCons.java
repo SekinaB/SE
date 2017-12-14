@@ -2,17 +2,27 @@ package jus.poc.prodcons.v1;
 
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import jus.poc.prodcons.*;
 
 public class TestProdCons extends Simulateur {
-	protected int nbProd, nbCons, nbBuffer, tempsMoyenProduction;
-	protected int deviationTempsMoyenProduction, tempsMoyenConsommation;
-	protected int deviationTempsMoyenConsommation, nombreMoyenDeProduction;
-	protected int deviationNombreMoyenDeProduction, nombreMoyenNbExemplaire;
-	protected int deviationNombreMoyenNbExemplaire;
+	private int nbProd;
+	private int nbCons;
+	private int nbBuffer;
+	private int tempsMoyenProduction;
+	private int nombreMoyenDeProduction;
+	private int deviationTempsMoyenProduction;
+	private int deviationNombreMoyenDeProduction;
+	private int tempsMoyenConsommation;
+	private int deviationTempsMoyenConsommation;
+	private int nombreMoyenNbExemplaire;
+	private int deviationNombreMoyenNbExemplaire;
+	
+	private List<Producteur> listProd;
+	private List<Consommateur> listCons;
 
 	public TestProdCons(Observateur observateur) {
 		super(observateur);
@@ -23,9 +33,21 @@ public class TestProdCons extends Simulateur {
 		String fileName = "options.xml";
 		init("jus/poc/prodcons/options/" + fileName);
 		// creer buffer
-		ProdCons buffer = new ProdCons();
+		ProdCons buffer = new ProdCons(nbBuffer);
+		
 		// creer prod et consomateurs et les demarrer
+		for(int i = 0; i<nbProd; i++){
+			Producteur currentProd = new Producteur(); 
+			listProd.add(currentProd);
+			currentProd.run();
+		}
+		for(int i = 0; i<nbCons; i++){
+			Consommateur currentCons = new Consommateur(); 
+			listCons.add(currentCons);
+			currentCons.run();
+		}
 		// gerer la condition de terminaison
+		while(true){}
 
 	}
 
