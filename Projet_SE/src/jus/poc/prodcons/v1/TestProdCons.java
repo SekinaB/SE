@@ -19,10 +19,10 @@ public class TestProdCons extends Simulateur {
 	private int deviationNombreMoyenDeProduction;
 	private int tempsMoyenConsommation;
 	private int deviationTempsMoyenConsommation;
-	
+
 	private int nombreMoyenNbExemplaire;
 	private int deviationNombreMoyenNbExemplaire;
-	
+
 	private List<Producteur> listProd;
 	private List<Consommateur> listCons;
 
@@ -38,22 +38,30 @@ public class TestProdCons extends Simulateur {
 		init("jus/poc/prodcons/options/" + fileName);
 		// creer buffer
 		ProdCons buffer = new ProdCons(nbBuffer);
-		
 		// creer prod et consomateurs et les demarrer
-		for(int i = 0; i<nbProd; i++){
+		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
-			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction, deviationTempsMoyenProduction); 
+			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction,
+					deviationTempsMoyenProduction);
 			currentProd.start();
 			listProd.add(i, currentProd);
 		}
-		for(int i = 0; i<nbCons; i++){
-			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation, deviationTempsMoyenConsommation); 		
+		for (int i = 0; i < nbCons; i++) {
+			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation,
+					deviationTempsMoyenConsommation);
 			currentCons.start();
 			listCons.add(currentCons);
 		}
-		// gerer la condition de terminaison
-		while(true){}
+		for (int i = 0; i < nbProd; i++) {
+			listProd.get(i).join();
+		}
 
+		for (int i = 0; i < nbCons; i++) {
+			listCons.get(i).join();
+			listCons.get(i).notifyAll();
+
+		}
+		// TODO :gerer la condition de terminaison
 	}
 
 	/**

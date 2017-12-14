@@ -20,13 +20,11 @@ public class ProdCons implements Tampon {
 
 	@Override
 	public int enAttente() {
-		// TODO Auto-generated method stub
 		return buffer.size();
 	}
 
 	@Override
 	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		// TODO Auto-generated method stub
 		MessageX message;
 		while (enAttente() == 0) {
 			try {
@@ -42,21 +40,19 @@ public class ProdCons implements Tampon {
 
 	@Override
 	public synchronized void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
-		// TODO Auto-generated method stub
-		while (taille() < tailleMax) {
+		while (taille() > tailleMax) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		buffer.set(taille(), (MessageX) arg1);
+		buffer.add(taille(), (MessageX) arg1);
 		notifyAll();
 	}
 
 	@Override
 	public int taille() {
-		// TODO Auto-generated method stub
 		return buffer.size();
 	}
 

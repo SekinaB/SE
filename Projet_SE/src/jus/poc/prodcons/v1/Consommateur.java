@@ -13,53 +13,46 @@ public class Consommateur extends Acteur implements _Consommateur {
 	private int identification;
 	private int nombreDeMessages;
 	private ProdCons buffer;
-	
+
 	protected Consommateur(ProdCons buffer, int identification, Observateur observateur, int moyenneTempsDeTraitement,
 			int deviationTempsDeTraitement) throws ControlException {
 		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
-		// TODO Auto-generated constructor stub
 		this.buffer = buffer;
 		this.identification = identification;
 	}
 
 	@Override
 	public int deviationTempsDeTraitement() {
-		// TODO Auto-generated method stub
 		return deviationTempsDeTraitement;
 	}
 
 	@Override
 	public int identification() {
-		// TODO Auto-generated method stub
 		return identification;
 	}
 
 	@Override
 	public int moyenneTempsDeTraitement() {
-		// TODO Auto-generated method stub
 		return moyenneTempsDeTraitement;
 	}
 
 	@Override
 	public int nombreDeMessages() {
-		// TODO Auto-generated method stub
 		return nombreDeMessages;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		MessageX val;
 		for (int i = 0; i < 10; i++) {
-        	try {
-        		sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
+			try {
+				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
 				val = (MessageX) buffer.get(this);
 				System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-        }
+		}
 	}
 
 }

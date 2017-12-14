@@ -7,7 +7,7 @@ public class MessageX implements Message {
 	private int identifiantProducteur;
 	private int identifiantMessage;
 	
-	public MessageX(int identifiantMessage, int identifiantProducteur){
+	public MessageX(int identifiantMessage, int identifiantProducteur) {
 		this.identifiantProducteur = identifiantProducteur;
 		this.identifiantMessage = identifiantMessage;
 	}
