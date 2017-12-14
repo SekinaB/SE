@@ -1,6 +1,7 @@
 package jus.poc.prodcons.v1;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class TestProdCons extends Simulateur {
 	private int deviationNombreMoyenDeProduction;
 	private int tempsMoyenConsommation;
 	private int deviationTempsMoyenConsommation;
+	
 	private int nombreMoyenNbExemplaire;
 	private int deviationNombreMoyenNbExemplaire;
 	
@@ -26,6 +28,8 @@ public class TestProdCons extends Simulateur {
 
 	public TestProdCons(Observateur observateur) {
 		super(observateur);
+		listProd = new ArrayList<Producteur>();
+		listCons = new ArrayList<Consommateur>();
 	}
 
 	protected void run() throws Exception {
@@ -37,14 +41,15 @@ public class TestProdCons extends Simulateur {
 		
 		// creer prod et consomateurs et les demarrer
 		for(int i = 0; i<nbProd; i++){
-			Producteur currentProd = new Producteur(); 
-			listProd.add(currentProd);
-			currentProd.run();
+			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
+			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction, deviationTempsMoyenProduction); 
+			currentProd.start();
+			listProd.add(i, currentProd);
 		}
 		for(int i = 0; i<nbCons; i++){
-			Consommateur currentCons = new Consommateur(); 
+			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation, deviationTempsMoyenConsommation); 		
+			currentCons.start();
 			listCons.add(currentCons);
-			currentCons.run();
 		}
 		// gerer la condition de terminaison
 		while(true){}
