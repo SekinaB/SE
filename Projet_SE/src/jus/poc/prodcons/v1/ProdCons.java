@@ -12,8 +12,8 @@ public class ProdCons implements Tampon {
 
 	List<MessageX> buffer;
 	private int tailleMax;
-	int consummed =0;
-	int produced=0;
+	private int consummed = 0;
+	private int produced = 0;
 
 	public ProdCons(int nbBuffer) {
 		this.buffer = new ArrayList<MessageX>();
@@ -22,60 +22,51 @@ public class ProdCons implements Tampon {
 
 	@Override
 	public int enAttente() {
-		// TODO Auto-generated method stub
 		return buffer.size();
 	}
 
 	@Override
 	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		// TODO Auto-generated method stub
 		MessageX message;
 		while (enAttente() == 0) {
 			try {
-				System.out.println("CONSO : Buffer full");
-				System.out.println("Contenu du buffer : " + buffer.size());
-				
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Accès au buffer : get!");
 		message = buffer.remove(0);
 		notifyAll();
 		consummed++;
+		System.out.println("RETRAIT :  "+message+ " PAR " + arg0.identification());
 		return message;
 	}
-	
 
 	@Override
 	public synchronized void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
-		// TODO Auto-generated method stub
 		while (taille() >= tailleMax) {
 			try {
-				System.out.println("waiting");
-				System.out.println("Contenu du buffer : " + buffer.size());
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("out of wait");
-		buffer.add(taille(),(MessageX) arg1) ;
+		buffer.add(taille(), (MessageX) arg1);
 		notifyAll();
 		produced++;
+		System.out.println("DEPOT :  "+arg1.toString()+ " PAR " + arg0.identification());
 	}
 
 	@Override
 	public int taille() {
-		// TODO Auto-generated method stub
 		return buffer.size();
 	}
-	public int getprod(){
+
+	public int getprod() {
 		return this.produced;
 	}
 
-	public int getcons(){
+	public int getcons() {
 		return this.consummed;
 	}
 }

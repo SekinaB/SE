@@ -54,7 +54,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 			try {
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
 				val = (MessageX) buffer.get(this);
-				System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
+				//System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

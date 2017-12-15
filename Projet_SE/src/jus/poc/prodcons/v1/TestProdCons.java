@@ -34,14 +34,14 @@ public class TestProdCons extends Simulateur {
 	}
 
 	protected void run() throws Exception {
-		System.out.println("Run");
 		// le corps de votre programme principal
 		String fileName = "options.xml";
 		init("./jus/poc/prodcons/v1/" + fileName);
+		
 		// creer buffer
-		System.out.println("Prod created");
 		ProdCons buffer = new ProdCons(nbBuffer);
-		this.nbProd_alive=nbProd;
+		this.nbProd_alive = nbProd;
+		
 		// creer prod et consomateurs et les demarrer
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
@@ -49,7 +49,6 @@ public class TestProdCons extends Simulateur {
 					deviationTempsMoyenProduction);
 			currentProd.start();
 			listProd.add(i, currentProd);
-			
 
 		}
 		for (int i = 0; i < nbCons; i++) {
@@ -58,22 +57,23 @@ public class TestProdCons extends Simulateur {
 			currentCons.setDaemon(true);
 			currentCons.start();
 			listCons.add(currentCons);
-			
 
 		}
-		System.out.println("Com et Prod initialisés");
+
 		// gerer la condition de terminaison
+		
 		for (int i = 0; i < nbProd; i++) {
-			//System.out.println("Waiting for " + i + " to die");
 			listProd.get(i).join();
 			this.nbProd_alive--;
-			System.out.println("Producteur restants en vie :" + this.nbProd_alive);
 			System.out.println(i + " Producteur dead");
 		}
+		
+		
+		while(buffer.enAttente()!=0){}
 
-			System.out.println("Contenu du buffer: " + buffer.taille());
-			System.out.println("consommé :" + buffer.getcons());
-			System.out.println("produit : " + buffer.getprod());
+		System.out.println("Contenu du buffer: " + buffer.taille());
+		System.out.println("consommé :" + buffer.getcons());
+		System.out.println("produit : " + buffer.getprod());
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class TestProdCons extends Simulateur {
 
 	public static void main(String[] args) {
 		new TestProdCons(new Observateur()).start();
-		
+
 	}
 
 }
