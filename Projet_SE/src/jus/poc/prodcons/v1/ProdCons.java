@@ -12,10 +12,12 @@ public class ProdCons implements Tampon {
 
 	List<MessageX> buffer;
 	private int tailleMax;
+	private int nbProd;
 
-	public ProdCons(int nbBuffer) {
+	public ProdCons(int nbBuffer, int nbProd) {
 		this.buffer = new ArrayList<MessageX>();
 		this.tailleMax = nbBuffer;
+		this.nbProd = nbProd;
 	}
 
 	@Override
@@ -25,10 +27,20 @@ public class ProdCons implements Tampon {
 
 	@Override
 	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		MessageX message;
-		message = buffer.remove(0);
-		notifyAll();
-		return message;
+		while (enAttente() == 0 && producteurAlive()) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		if (enAttente()>0){
+			MessageX message;
+			message = buffer.remove(0);
+			notifyAll();
+			return message;
+		}
+		return null;
 	}
 
 	@Override
@@ -47,6 +59,14 @@ public class ProdCons implements Tampon {
 	@Override
 	public int taille() {
 		return buffer.size();
+	}
+
+	public void finProducteur() {
+		this.nbProd--;
+	}
+
+	public boolean producteurAlive() {
+		return !(nbProd == 0);
 	}
 
 }

@@ -54,6 +54,8 @@ public class Producteur extends Acteur implements _Producteur {
 				e.printStackTrace();
 			}
 		}
+		buffer.finProducteur();
+		System.out.println("Le producteur " + this.identification + " is dead ");
 	}
 
 }

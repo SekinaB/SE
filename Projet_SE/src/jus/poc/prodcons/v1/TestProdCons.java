@@ -37,7 +37,7 @@ public class TestProdCons extends Simulateur {
 		String fileName = "options.xml";
 		init("jus/poc/prodcons/options/" + fileName);
 		// creer buffer
-		ProdCons buffer = new ProdCons(nbBuffer);
+		ProdCons buffer = new ProdCons(nbBuffer, nbProd);
 		// creer prod et consomateurs et les demarrer
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
@@ -50,7 +50,7 @@ public class TestProdCons extends Simulateur {
 			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation,
 					deviationTempsMoyenConsommation);
 			currentCons.start();
-			listCons.add(currentCons);
+			listCons.add(i, currentCons);
 		}
 
 		for (int i = 0; i < nbCons; i++) {
@@ -86,7 +86,14 @@ public class TestProdCons extends Simulateur {
 	}
 
 	public static void main(String[] args) {
-		new TestProdCons(new Observateur()).start();
+		TestProdCons t = new TestProdCons(new Observateur());
+		t.start();
+		try {
+			t.finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -44,17 +44,18 @@ public class Consommateur extends Acteur implements _Consommateur {
 	@Override
 	public void run() {
 		MessageX val;
-		for (int i = 0; i < 10; i++) {
+		while ((buffer.enAttente() > 0) || buffer.producteurAlive()) {
 			try {
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
-				if (buffer.enAttente() > 0) {
-					val = (MessageX) buffer.get(this);
+				val = (MessageX) buffer.get(this);
+				if (val != null) {
 					System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
-				}	
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Le consommateur " + this.identification + " is dead ");
 	}
 
 }
