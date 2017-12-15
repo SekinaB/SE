@@ -41,12 +41,11 @@ public class ProdCons implements Tampon {
 					e.printStackTrace();
 				}
 			}
+			message = buffer.remove(0);
+			//notifyAll();
+			consummed++;
+			System.out.println("RETRAIT :  "+message+ " PAR " + arg0.identification());
 		}
-		
-		message = buffer.remove(0);
-		notifyAll();
-		consummed++;
-		System.out.println("RETRAIT :  "+message+ " PAR " + arg0.identification());
 		fifo.release();
 		return message;
 		
@@ -62,9 +61,9 @@ public class ProdCons implements Tampon {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			}
+			}	
+			
 		}
-		
 		buffer.add(taille(), (MessageX) arg1);
 		//notifyAll();
 		produced++;
