@@ -52,7 +52,9 @@ public class Producteur extends Acteur implements _Producteur {
 		// TODO Auto-generated method stub
 		for (int i = 0; i < nombreDeMessages; i++) {
 			try {
+				System.out.println("sleeping");
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
+				System.out.println("Wake up");
 				MessageX messageProd = new MessageX(i, identification);
 				buffer.put(this, messageProd);
 				System.out.println("Le producteur " + this.identification + " produit le message " + i);

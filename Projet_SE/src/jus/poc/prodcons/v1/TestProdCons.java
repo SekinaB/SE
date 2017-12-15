@@ -25,6 +25,7 @@ public class TestProdCons extends Simulateur {
 
 	private List<Producteur> listProd;
 	private List<Consommateur> listCons;
+	private int nbProd_alive;
 
 	public TestProdCons(Observateur observateur) {
 		super(observateur);
@@ -40,38 +41,39 @@ public class TestProdCons extends Simulateur {
 		// creer buffer
 		System.out.println("Prod created");
 		ProdCons buffer = new ProdCons(nbBuffer);
-
+		this.nbProd_alive=nbProd;
 		// creer prod et consomateurs et les demarrer
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction,
 					deviationTempsMoyenProduction);
-			listProd.add(i, currentProd);
 			currentProd.start();
+			listProd.add(i, currentProd);
+			
 
 		}
 		for (int i = 0; i < nbCons; i++) {
 			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation,
 					deviationTempsMoyenConsommation);
-			listCons.add(currentCons);
+			currentCons.setDaemon(true);
 			currentCons.start();
+			listCons.add(currentCons);
+			
 
 		}
+		System.out.println("Com et Prod initialisés");
 		// gerer la condition de terminaison
 		for (int i = 0; i < nbProd; i++) {
+			//System.out.println("Waiting for " + i + " to die");
 			listProd.get(i).join();
+			this.nbProd_alive--;
+			System.out.println("Producteur restants en vie :" + this.nbProd_alive);
 			System.out.println(i + " Producteur dead");
 		}
-		if(buffer.enAttente()==0){
-			for (int i = 0; i < nbCons; i++) {
-				//System.out.println("trying to die ");
-				listCons.get(i).join();
-				System.out.println(i + " Consommateur dead");
-			}
-		}
-		
-			System.out.println(buffer.getcons());
-			System.out.println(buffer.getprod());
+
+			System.out.println("Contenu du buffer: " + buffer.taille());
+			System.out.println("consommé :" + buffer.getcons());
+			System.out.println("produit : " + buffer.getprod());
 	}
 
 	/**

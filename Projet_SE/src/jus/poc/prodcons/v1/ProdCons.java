@@ -30,13 +30,17 @@ public class ProdCons implements Tampon {
 	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
 		// TODO Auto-generated method stub
 		MessageX message;
-	/*	while (enAttente() == 0) {
+		while (enAttente() == 0) {
 			try {
+				System.out.println("CONSO : Buffer full");
+				System.out.println("Contenu du buffer : " + buffer.size());
+				
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}*/
+		}
+		System.out.println("Accès au buffer : get!");
 		message = buffer.remove(0);
 		notifyAll();
 		consummed++;
@@ -47,13 +51,16 @@ public class ProdCons implements Tampon {
 	@Override
 	public synchronized void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
 		// TODO Auto-generated method stub
-		while (taille() > tailleMax) {
+		while (taille() >= tailleMax) {
 			try {
+				System.out.println("waiting");
+				System.out.println("Contenu du buffer : " + buffer.size());
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("out of wait");
 		buffer.add(taille(),(MessageX) arg1) ;
 		notifyAll();
 		produced++;

@@ -50,13 +50,11 @@ public class Consommateur extends Acteur implements _Consommateur {
 	public void run() {
 		// TODO Auto-generated method stub
 		MessageX val;
-		for (int i = 0; i < 10; i++) {
+		while(true){
 			try {
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
-				if (buffer.enAttente() != 0) {
-					val = (MessageX) buffer.get(this);
-					System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
-				}
+				val = (MessageX) buffer.get(this);
+				System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
