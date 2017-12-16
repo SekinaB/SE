@@ -10,9 +10,11 @@ import jus.poc.prodcons._Producteur;
 
 public class ProdCons implements Tampon {
 
-	List<MessageX> buffer;
+	private List<MessageX> buffer;
 	private int tailleMax;
 	private int nbProd;
+	private int nbConsummed = 0;
+	private int nbProduced = 0;
 
 	public ProdCons(int nbBuffer, int nbProd) {
 		this.buffer = new ArrayList<MessageX>();
@@ -27,25 +29,23 @@ public class ProdCons implements Tampon {
 
 	@Override
 	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		while (enAttente() == 0 && producteurAlive()) {
+		while (enAttente() == 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		if (enAttente()>0){
-			MessageX message;
-			message = buffer.remove(0);
-			notifyAll();
-			return message;
-		}
-		return null;
+		MessageX message;
+		message = buffer.remove(0);
+		nbConsummed++;
+		notifyAll();
+		return message;
 	}
 
 	@Override
 	public synchronized void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
-		while (taille() > tailleMax) {
+		while (taille() >= tailleMax) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -53,6 +53,8 @@ public class ProdCons implements Tampon {
 			}
 		}
 		buffer.add(taille(), (MessageX) arg1);
+
+		nbProduced++;
 		notifyAll();
 	}
 
@@ -67,6 +69,14 @@ public class ProdCons implements Tampon {
 
 	public boolean producteurAlive() {
 		return !(nbProd == 0);
+	}
+
+	public int getProduced() {
+		return this.nbProduced;
+	}
+
+	public int getConsummed() {
+		return this.nbConsummed;
 	}
 
 }

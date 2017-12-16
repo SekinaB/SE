@@ -48,14 +48,14 @@ public class Consommateur extends Acteur implements _Consommateur {
 			try {
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
 				val = (MessageX) buffer.get(this);
-				if (val != null) {
-					System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
-				}
+				System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Le consommateur " + this.identification + " is dead ");
+		if (TestProdCons.DEBUG) {
+			System.out.println("Le consommateur " + this.identification + " is dead ");
+		}
 	}
 
 }

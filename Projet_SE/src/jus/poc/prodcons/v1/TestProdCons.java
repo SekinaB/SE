@@ -10,6 +10,7 @@ import java.util.Properties;
 import jus.poc.prodcons.*;
 
 public class TestProdCons extends Simulateur {
+	public static boolean DEBUG;
 	private int nbProd;
 	private int nbCons;
 	private int nbBuffer;
@@ -33,12 +34,11 @@ public class TestProdCons extends Simulateur {
 	}
 
 	protected void run() throws Exception {
-		// le corps de votre programme principal
 		String fileName = "options.xml";
 		init("jus/poc/prodcons/options/" + fileName);
-		// creer buffer
+		
 		ProdCons buffer = new ProdCons(nbBuffer, nbProd);
-		// creer prod et consomateurs et les demarrer
+
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction,
@@ -49,14 +49,23 @@ public class TestProdCons extends Simulateur {
 		for (int i = 0; i < nbCons; i++) {
 			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation,
 					deviationTempsMoyenConsommation);
+			currentCons.setDaemon(true);
 			currentCons.start();
 			listCons.add(i, currentCons);
 		}
 
-		for (int i = 0; i < nbCons; i++) {
-			listCons.get(i).join();
+		for (int i = 0; i < nbProd; i++) {
+			listProd.get(i).join();
+			if(DEBUG){
+				System.out.println(i + " Producteur dead");
+			}
 		}
 		// TODO :gerer la condition de terminaison
+		if(DEBUG){
+			System.out.println("Contenu du buffer: " + buffer.taille());
+			System.out.println("consommé :" + buffer.getConsummed());
+			System.out.println("produit : " + buffer.getProduced());
+		}
 	}
 
 	/**

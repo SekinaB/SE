@@ -55,7 +55,10 @@ public class Producteur extends Acteur implements _Producteur {
 			}
 		}
 		buffer.finProducteur();
-		System.out.println("Le producteur " + this.identification + " is dead ");
+		if (TestProdCons.DEBUG) {
+			System.out.println("Le producteur " + this.identification + " is dead ");
+
+		}
 	}
 
 }
