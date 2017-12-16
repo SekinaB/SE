@@ -21,6 +21,8 @@ public class Producteur extends Acteur implements _Producteur {
 		this.buffer = buffer;
 		this.identification = identification;
 		this.nombreDeMessages = nombreDeMessages;
+		this.moyenneTempsDeTraitement=moyenneTempsDeTraitement;
+		this.deviationTempsDeTraitement=deviationTempsDeTraitement;
 	}
 
 	@Override
@@ -47,18 +49,11 @@ public class Producteur extends Acteur implements _Producteur {
 	public void run() {
 		for (int i = 0; i < nombreDeMessages; i++) {
 			try {
-				int productionDelai = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+				int productionDelai = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
 				MessageX messageProd = new MessageX(i, identification);
 				sleep(productionDelai);
-				try{
-					this.observateur.productionMessage(this, messageProd, productionDelai);
-				}
-				catch(Exception e){
-					e.printStackTrace();
-				}
 				buffer.put(this, messageProd);
-				Message message= null;
-				
+				this.observateur.productionMessage(this, messageProd, productionDelai);
 				// System.out.println("Le producteur " + this.identification + "
 				// produit le message " + i);
 			} catch (Exception e) {
