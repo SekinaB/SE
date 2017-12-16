@@ -15,12 +15,16 @@ public class ProdCons implements Tampon {
 	private int tailleMax;
 	private int consummed = 0;
 	private int produced = 0;
-	
-	Semaphore fifo = new Semaphore(1);
+	Semaphore notFull;
+	Semaphore notEmpty;
+	Semaphore mutex;
 
 	public ProdCons(int nbBuffer) {
 		this.buffer = new ArrayList<MessageX>();
 		this.tailleMax = nbBuffer;
+		notFull = new Semaphore(nbBuffer);
+		notEmpty = new Semaphore(0);
+		mutex = new Semaphore(1);
 	}
 
 	@Override
@@ -32,43 +36,33 @@ public class ProdCons implements Tampon {
 	public Message get(_Consommateur arg0) throws Exception, InterruptedException {
 		MessageX message;
 		
-		fifo.acquire();	
-		synchronized(this) {
-			while (enAttente() == 0) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			message = buffer.remove(0);
-			//notifyAll();
-			consummed++;
-			System.out.println("RETRAIT :  "+message+ " PAR " + arg0.identification());
-		}
-		fifo.release();
-		return message;
+		notEmpty.acquire();
+		mutex.acquire();
+
+		message = buffer.remove(0);
+		consummed++;
 		
+		System.out.println("RETRAIT :  " + message + " PAR " + arg0.identification());
+		mutex.release();
+		notFull.release();
+		
+		return message;
+
 	}
 
 	@Override
 	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
-		fifo.acquire();
-		synchronized(this) {
-			while (taille() >= tailleMax) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}	
-			
-		}
+		notFull.acquire();
+		//System.out.println("PUT NOTFULL " + arg0.identification());
+		mutex.acquire();
+		//System.out.println("PUT MUTEX  " + arg0.identification());
 		buffer.add(taille(), (MessageX) arg1);
-		//notifyAll();
 		produced++;
-		System.out.println("DEPOT :  "+arg1.toString()+ " PAR " + arg0.identification());
-		fifo.release();
+		System.out.println("DEPOT :  " + arg1.toString() + " PAR " + arg0.identification());
+		mutex.release();
+		//System.out.println("PUT MUTEX Released " + arg0.identification());
+		notEmpty.release();
+		//System.out.println("Put FIFO Released by" + arg0.identification());
 	}
 
 	@Override
