@@ -65,7 +65,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 	@Override
 	public void run() {
-		MessageX val;
+		MessageX messageCons;
 		while ((buffer.enAttente() > 0) || buffer.producteurAlive()) {
 			try {
 				// Simulation du temps de traitement avec un sleep avant le
@@ -73,10 +73,10 @@ public class Consommateur extends Acteur implements _Consommateur {
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
 
 				// Recuperation du message
-				val = (MessageX) buffer.get(this);
+				messageCons = (MessageX) buffer.get(this);
 
 				// Traitement du message
-				System.out.println("RETRAIT : " + val.toString() + " by Consommateur " + this.identification);
+				System.out.println("RETRAIT : " + messageCons.toString() + " by Consommateur " + this.identification);
 
 			} catch (Exception e) {
 				e.printStackTrace();

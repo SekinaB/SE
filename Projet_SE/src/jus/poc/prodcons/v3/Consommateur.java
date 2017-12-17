@@ -1,7 +1,5 @@
 package jus.poc.prodcons.v3;
 
-import java.util.Date;
-
 import jus.poc.prodcons.Acteur;
 import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.ControlException;
@@ -28,21 +26,41 @@ public class Consommateur extends Acteur implements _Consommateur {
 	}
 
 	@Override
+	/**
+	 * Getter of deviationTempsDeTraitement
+	 * 
+	 * @return deviationTempsDeTraitement of the Consommateur
+	 */
 	public int deviationTempsDeTraitement() {
 		return deviationTempsDeTraitement;
 	}
 
 	@Override
+	/**
+	 * Getter of identification
+	 * 
+	 * @return identification of the Consommateur
+	 */
 	public int identification() {
 		return identification;
 	}
 
 	@Override
+	/**
+	 * Getter of moyenneTempsDeTraitement
+	 * 
+	 * @return moyenneTempsDeTraitement of the Consommateur
+	 */
 	public int moyenneTempsDeTraitement() {
 		return moyenneTempsDeTraitement;
 	}
 
 	@Override
+	/**
+	 * Getter of nombreDeMessages
+	 * 
+	 * @return nombreDeMessages of the Consommateur
+	 */
 	public int nombreDeMessages() {
 		return nombreDeMessages;
 	}
@@ -52,19 +70,21 @@ public class Consommateur extends Acteur implements _Consommateur {
 		MessageX messageCons;
 		while ((buffer.enAttente() > 0) || buffer.producteurAlive()) {
 			try {
+				// Simulation du temps de traitement avec un sleep avant le
+				// retrait
 				int tempsDeTraitement = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+				sleep(tempsDeTraitement);
+				
+				// Recuperation du message
 				messageCons = (MessageX) buffer.get(this);
 				observateur.consommationMessage(this, messageCons, tempsDeTraitement);
-				Date d = new Date();
-				System.out.println("Le consommateur " + this.identification + " consomme " + messageCons.toString()
-						+ " " + d.getTime());
-				sleep(tempsDeTraitement);
+				
+				// Traitement du message
+				System.out.println("RETRAIT : " + messageCons.toString() + " by Consommateur " + this.identification);
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		if (TestProdCons.DEBUG) {
-			System.out.println("Le consommateur " + this.identification + " is dead ");
 		}
 	}
 

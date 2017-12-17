@@ -125,14 +125,7 @@ public class TestProdCons extends Simulateur {
 	}
 
 	public static void main(String[] args) {
-		TestProdCons t = new TestProdCons(new Observateur());
-		t.start();
-		try {
-			t.finalize();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		new TestProdCons(new Observateur()).start();
 	}
 
 }
