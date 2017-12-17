@@ -87,7 +87,6 @@ public class TestProdCons extends Simulateur {
 			Thread.yield();
 		} while (buffer.enAttente() > 0);
 
-		
 		if (FLAG_DEBUG) {
 			System.out.println("Contenu du buffer: " + buffer.taille());
 			System.out.println("consommé :" + buffer.getConsummed());
@@ -96,7 +95,7 @@ public class TestProdCons extends Simulateur {
 		if (FLAG_TIME) {
 			Date d = new Date();
 			System.out.println("Fin du Programme: " + (d.getTime() - START_TIME.getTime()));
-			}
+		}
 	}
 
 	/**

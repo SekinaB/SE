@@ -82,8 +82,8 @@ public class Producteur extends Acteur implements _Producteur {
 
 				if (TestProdCons.FLAG_TIME) {
 					Date d = new Date();
-					System.out.println(
-							"DEPOT : Message " + i + " by Producteur " + this.identification + " at " + (d.getTime() - TestProdCons.START_TIME.getTime()));
+					System.out.println("DEPOT : Message " + i + " by Producteur " + this.identification + " at "
+							+ (d.getTime() - TestProdCons.START_TIME.getTime()));
 				} else {
 					System.out.println("DEPOT : Message " + i + " by Producteur " + this.identification);
 				}

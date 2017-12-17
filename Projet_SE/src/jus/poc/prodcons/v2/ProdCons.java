@@ -12,7 +12,7 @@ import jus.poc.prodcons._Producteur;
 public class ProdCons implements Tampon {
 
 	private List<MessageX> buffer;
-	//private int tailleMax; 	UNUSED
+	// private int tailleMax; UNUSED
 	private int nbProd; // Nombre de producteurs qui accedent au buffer
 	private int nbConsummed = 0; // Nombre de messages consommes pour le moment
 	private int nbProduced = 0; // Nombre de messages produits pour le moment
@@ -22,7 +22,7 @@ public class ProdCons implements Tampon {
 
 	public ProdCons(int nbBuffer, int nbProd) {
 		this.buffer = new ArrayList<MessageX>();
-		//this.tailleMax = nbBuffer; 	UNUSED
+		// this.tailleMax = nbBuffer; UNUSED
 		this.nbProd = nbProd;
 		notFull = new Semaphore(nbBuffer);
 		notEmpty = new Semaphore(0);

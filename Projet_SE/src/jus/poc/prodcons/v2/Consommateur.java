@@ -76,8 +76,8 @@ public class Consommateur extends Acteur implements _Consommateur {
 				val = (MessageX) buffer.get(this);
 
 				// Traitement du message
-				System.out.println("RETREAT : " + val.toString() + " by Consommateur " + this.identification);
-		
+				System.out.println("RETRAIT : " + val.toString() + " by Consommateur " + this.identification);
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

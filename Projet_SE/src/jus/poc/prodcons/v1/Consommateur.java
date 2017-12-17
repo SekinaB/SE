@@ -77,7 +77,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 				// Traitement du message
 				System.out.println("RETRAIT : " + val.toString() + " by Consommateur " + this.identification);
-		
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
