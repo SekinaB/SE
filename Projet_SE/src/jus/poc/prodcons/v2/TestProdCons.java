@@ -54,13 +54,17 @@ public class TestProdCons extends Simulateur {
 			listCons.add(i, currentCons);
 		}
 
+
 		for (int i = 0; i < nbProd; i++) {
 			listProd.get(i).join();
 			if(DEBUG){
 				System.out.println(i + " Producteur dead");
 			}
 		}
-		// TODO :gerer la condition de terminaison
+		do {
+			Thread.yield();
+		} while (buffer.enAttente() > 0);
+		
 		if(DEBUG){
 			System.out.println("Contenu du buffer: " + buffer.taille());
 			System.out.println("consommé :" + buffer.getConsummed());

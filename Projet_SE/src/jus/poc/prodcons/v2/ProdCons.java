@@ -40,10 +40,10 @@ public class ProdCons implements Tampon {
 
 		notEmpty.acquire();
 		mutex.acquire();
-
+		synchronized (this){
 		message = buffer.remove(0);
 		nbConsummed++;
-
+		}
 		mutex.release();
 		notFull.release();
 		return message;
@@ -59,8 +59,10 @@ public class ProdCons implements Tampon {
 		if (TestProdCons.DEBUG) {
 			System.out.println("PUT MUTEX  " + arg0.identification());
 		}
+		synchronized (this){
 		buffer.add(taille(), (MessageX) arg1);
 		nbProduced++;
+		}
 		mutex.release();
 		if (TestProdCons.DEBUG) {
 			System.out.println("PUT MUTEX Released " + arg0.identification());

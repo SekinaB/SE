@@ -1,4 +1,4 @@
-package jus.poc.prodcons.v2;
+package jus.poc.prodcons.v3;
 
 import java.util.Date;
 
@@ -6,24 +6,25 @@ import jus.poc.prodcons.Acteur;
 import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Observateur;
-import jus.poc.prodcons._Producteur;
+import jus.poc.prodcons._Consommateur;
 
-public class Producteur extends Acteur implements _Producteur {
+public class Consommateur extends Acteur implements _Consommateur {
 
 	private int deviationTempsDeTraitement;
 	private int moyenneTempsDeTraitement;
 	private int identification;
 	private int nombreDeMessages;
 	private ProdCons buffer;
+	private Observateur observateur;
 
-	protected Producteur(ProdCons buffer, int identification, int nombreDeMessages, Observateur observateur,
-			int moyenneTempsDeTraitement, int deviationTempsDeTraitement) throws ControlException {
-		super(Acteur.typeProducteur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
+	protected Consommateur(ProdCons buffer, int identification, Observateur observateur, int moyenneTempsDeTraitement,
+			int deviationTempsDeTraitement) throws ControlException {
+		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
 		this.deviationTempsDeTraitement = deviationTempsDeTraitement;
 		this.moyenneTempsDeTraitement = moyenneTempsDeTraitement;
 		this.identification = identification;
-		this.nombreDeMessages = nombreDeMessages;
 		this.buffer = buffer;
+		this.observateur = observateur;
 	}
 
 	@Override
@@ -48,21 +49,22 @@ public class Producteur extends Acteur implements _Producteur {
 
 	@Override
 	public void run() {
-		for (int i = 0; i < nombreDeMessages; i++) {
+		MessageX messageCons;
+		while ((buffer.enAttente() > 0) || buffer.producteurAlive()) {
 			try {
-				MessageX messageProd = new MessageX(i, identification);
-				buffer.put(this, messageProd);
+				int tempsDeTraitement = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+				messageCons = (MessageX) buffer.get(this);
+				observateur.consommationMessage(this, messageCons, tempsDeTraitement);
 				Date d = new Date();
-				System.out.println("Le producteur " + this.identification + " produit le message " + i + " " + d.getTime());
-				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
+				System.out.println("Le consommateur " + this.identification + " consomme " + messageCons.toString()
+						+ " " + d.getTime());
+				sleep(tempsDeTraitement);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		buffer.finProducteur();
 		if (TestProdCons.DEBUG) {
-			System.out.println("Le producteur " + this.identification + " is dead ");
-
+			System.out.println("Le consommateur " + this.identification + " is dead ");
 		}
 	}
 

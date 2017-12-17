@@ -2,6 +2,7 @@ package jus.poc.prodcons.v1;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,11 @@ import java.util.Properties;
 import jus.poc.prodcons.*;
 
 public class TestProdCons extends Simulateur {
-	public static boolean DEBUG;
+
+	public static boolean FLAG_DEBUG = false;
+	public static boolean FLAG_TIME = true;
+	public static Date START_TIME = new Date();
+
 	private int nbProd;
 	private int nbCons;
 	private int nbBuffer;
@@ -35,37 +40,63 @@ public class TestProdCons extends Simulateur {
 
 	protected void run() throws Exception {
 		String fileName = "options.xml";
+
+		// Initialisation des variables
 		init("jus/poc/prodcons/options/" + fileName);
-		
+
+		// Creation du buffer
 		ProdCons buffer = new ProdCons(nbBuffer, nbProd);
 
+		// Creation des Producteurs
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction,
 					deviationTempsMoyenProduction);
+			if (FLAG_DEBUG) {
+				System.out.println("Prod " + i + " alive");
+			}
 			currentProd.start();
 			listProd.add(i, currentProd);
 		}
+
+		// Creation des Consommateurs
 		for (int i = 0; i < nbCons; i++) {
 			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation,
 					deviationTempsMoyenConsommation);
 			currentCons.setDaemon(true);
+			if (FLAG_DEBUG) {
+				System.out.println("Cons " + i + " alive");
+			}
 			currentCons.start();
 			listCons.add(i, currentCons);
 		}
 
+		// Terminaison des Producteur :
+		// On les tue a la fin de leur execution.
 		for (int i = 0; i < nbProd; i++) {
 			listProd.get(i).join();
-			if(DEBUG){
-				System.out.println(i + " Producteur dead");
+			if (FLAG_DEBUG) {
+				System.out.println("Prod " + i + " dead");
 			}
 		}
-		// TODO :gerer la condition de terminaison
-		if(DEBUG){
+
+		// Condition de Terminaison:
+		// On laisse les Consommateurs s'executer tant que le buffer n'est pas
+		// vide
+		do {
+			Thread.yield();
+		} while (buffer.enAttente() > 0);
+
+		
+		if (FLAG_DEBUG) {
 			System.out.println("Contenu du buffer: " + buffer.taille());
 			System.out.println("consommé :" + buffer.getConsummed());
 			System.out.println("produit : " + buffer.getProduced());
 		}
+		if (FLAG_TIME) {
+			Date d = new Date();
+			System.out.println("Fin du Programme: " + (d.getTime() - START_TIME.getTime()));
+			}
 	}
 
 	/**

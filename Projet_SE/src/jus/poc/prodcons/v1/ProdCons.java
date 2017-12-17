@@ -12,9 +12,9 @@ public class ProdCons implements Tampon {
 
 	private List<MessageX> buffer;
 	private int tailleMax;
-	private int nbProd;
-	private int nbConsummed = 0;
-	private int nbProduced = 0;
+	private int nbProd; // Nombre de producteurs qui accedent au buffer
+	private int nbConsummed = 0; // Nombre de messages consommes pour le moment
+	private int nbProduced = 0; // Nombre de messages produits pour le moment
 
 	public ProdCons(int nbBuffer, int nbProd) {
 		this.buffer = new ArrayList<MessageX>();
@@ -23,13 +23,22 @@ public class ProdCons implements Tampon {
 	}
 
 	@Override
+	/**
+	 * @return le nombre de message actuellement dans le buffer
+	 */
 	public int enAttente() {
 		return buffer.size();
 	}
 
 	@Override
+	/**
+	 * Retire le premier message du buffer
+	 * 
+	 * @return le message retire
+	 */
 	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		while (enAttente() == 0) {
+		// Tant le buffer est vide, on attend
+		while (enAttente() <= 0) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
@@ -37,14 +46,28 @@ public class ProdCons implements Tampon {
 			}
 		}
 		MessageX message;
+		// On enleve le permier message du buffer donc celui a l'indice 0
 		message = buffer.remove(0);
+
+		// On initialise la date du retait du message
+		message.setDate();
+
+		// On augmente le nombre de message consommes
 		nbConsummed++;
+
+		// On reveil les thread en attente si il y en a
 		notifyAll();
 		return message;
 	}
 
 	@Override
+	/**
+	 * Met le message a la fin buffer
+	 * 
+	 * @return le message retire
+	 */
 	public synchronized void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
+		// Tant le buffer est plein, on attend
 		while (taille() >= tailleMax) {
 			try {
 				wait();
@@ -52,29 +75,54 @@ public class ProdCons implements Tampon {
 				e.printStackTrace();
 			}
 		}
+		// On met message a la fin du buffer donc a l'indice taille()
 		buffer.add(taille(), (MessageX) arg1);
 
+		// On augmente le nombre de message produits
 		nbProduced++;
+
+		// On reveil les thread en attente si il y en a
 		notifyAll();
 	}
 
 	@Override
+	/**
+	 * Retourne la taille actuelle du buffer
+	 * 
+	 * @return taille du buffer
+	 */
 	public int taille() {
 		return buffer.size();
 	}
 
+	/**
+	 * Decremente le nombre de producteurs qui accedent au buffer
+	 * 
+	 */
 	public void finProducteur() {
 		this.nbProd--;
 	}
 
+	/**
+	 * Retourne Vrai si il reste des producteurs, dont l'execution n'a pas ete
+	 * terminee, accedant au buffer
+	 * 
+	 * @return vrai si il reste des producteurs accedant au buffer
+	 */
 	public boolean producteurAlive() {
 		return !(nbProd == 0);
 	}
 
+	/**
+	 * @return le nombre de messages produits au total
+	 */
 	public int getProduced() {
 		return this.nbProduced;
 	}
 
+	/**
+	 * @return le nombre de messages consommes au total
+	 */
 	public int getConsummed() {
 		return this.nbConsummed;
 	}
