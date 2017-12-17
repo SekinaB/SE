@@ -1,5 +1,7 @@
 package jus.poc.prodcons.v2;
 
+import java.util.Date;
+
 import jus.poc.prodcons.Acteur;
 import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.ControlException;
@@ -17,8 +19,10 @@ public class Consommateur extends Acteur implements _Consommateur {
 	protected Consommateur(ProdCons buffer, int identification, Observateur observateur, int moyenneTempsDeTraitement,
 			int deviationTempsDeTraitement) throws ControlException {
 		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
-		this.buffer = buffer;
+		this.deviationTempsDeTraitement = deviationTempsDeTraitement;
+		this.moyenneTempsDeTraitement = moyenneTempsDeTraitement;
 		this.identification = identification;
+		this.buffer = buffer;
 	}
 
 	@Override
@@ -46,9 +50,10 @@ public class Consommateur extends Acteur implements _Consommateur {
 		MessageX val;
 		while ((buffer.enAttente() > 0) || buffer.producteurAlive()) {
 			try {
-				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
 				val = (MessageX) buffer.get(this);
-				System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
+				Date d = new Date();
+				System.out.println("Le consommateur " + this.identification + " consomme " + val.toString() + " " + d.getTime());
+				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

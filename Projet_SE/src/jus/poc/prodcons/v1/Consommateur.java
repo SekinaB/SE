@@ -17,26 +17,48 @@ public class Consommateur extends Acteur implements _Consommateur {
 	protected Consommateur(ProdCons buffer, int identification, Observateur observateur, int moyenneTempsDeTraitement,
 			int deviationTempsDeTraitement) throws ControlException {
 		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
-		this.buffer = buffer;
+		this.deviationTempsDeTraitement = deviationTempsDeTraitement;
+		this.moyenneTempsDeTraitement = moyenneTempsDeTraitement;
 		this.identification = identification;
+		this.buffer = buffer;
 	}
 
 	@Override
+	/**
+	 * Getter of deviationTempsDeTraitement
+	 * 
+	 * @return deviationTempsDeTraitement of the Consommateur
+	 */
 	public int deviationTempsDeTraitement() {
 		return deviationTempsDeTraitement;
 	}
 
 	@Override
+	/**
+	 * Getter of identification
+	 * 
+	 * @return identification of the Consommateur
+	 */
 	public int identification() {
 		return identification;
 	}
 
 	@Override
+	/**
+	 * Getter of moyenneTempsDeTraitement
+	 * 
+	 * @return moyenneTempsDeTraitement of the Consommateur
+	 */
 	public int moyenneTempsDeTraitement() {
 		return moyenneTempsDeTraitement;
 	}
 
 	@Override
+	/**
+	 * Getter of nombreDeMessages
+	 * 
+	 * @return nombreDeMessages of the Consommateur
+	 */
 	public int nombreDeMessages() {
 		return nombreDeMessages;
 	}
@@ -46,15 +68,19 @@ public class Consommateur extends Acteur implements _Consommateur {
 		MessageX val;
 		while ((buffer.enAttente() > 0) || buffer.producteurAlive()) {
 			try {
+				// Simulation du temps de traitement avec un sleep avant le
+				// retrait
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
+
+				// Recuperation du message
 				val = (MessageX) buffer.get(this);
-				System.out.println("Le consommateur " + this.identification + " consomme " + val.toString());
+
+				// Traitement du message
+				System.out.println("RETREAT : " + val.toString() + " by Consommateur " + this.identification);
+		
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-		if (TestProdCons.DEBUG) {
-			System.out.println("Le consommateur " + this.identification + " is dead ");
 		}
 	}
 
