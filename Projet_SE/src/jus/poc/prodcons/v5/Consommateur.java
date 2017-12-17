@@ -1,4 +1,4 @@
-package jus.poc.prodcons.v4;
+package jus.poc.prodcons.v5;
 
 import jus.poc.prodcons.Acteur;
 import jus.poc.prodcons.Aleatoire;
@@ -13,6 +13,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 	private int identification;
 	private int nombreDeMessages;
 	private ProdCons buffer;
+	private Observateur observateur;
 
 	protected Consommateur(ProdCons buffer, int identification, Observateur observateur, int moyenneTempsDeTraitement,
 			int deviationTempsDeTraitement) throws ControlException {
@@ -21,6 +22,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 		this.moyenneTempsDeTraitement = moyenneTempsDeTraitement;
 		this.identification = identification;
 		this.buffer = buffer;
+		this.observateur = observateur;
 	}
 
 	@Override
@@ -70,11 +72,13 @@ public class Consommateur extends Acteur implements _Consommateur {
 			try {
 				// Simulation du temps de traitement avec un sleep avant le
 				// retrait
-				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
-
+				int tempsDeTraitement = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+				sleep(tempsDeTraitement);
+				
 				// Recuperation du message
 				messageCons = (MessageX) buffer.get(this);
-
+				observateur.consommationMessage(this, messageCons, tempsDeTraitement);
+				
 				// Traitement du message
 				System.out.println("RETRAIT : " + messageCons.toString() + " by Consommateur " + this.identification);
 

@@ -1,4 +1,4 @@
-package jus.poc.prodcons.v4;
+package jus.poc.prodcons.v5;
 
 import java.util.Date;
 
@@ -15,6 +15,7 @@ public class Producteur extends Acteur implements _Producteur {
 	private int identification;
 	private int nombreDeMessages;
 	private ProdCons buffer;
+	private Observateur observateur;
 
 	protected Producteur(ProdCons buffer, int identification, int nombreDeMessages, Observateur observateur,
 			int moyenneTempsDeTraitement, int deviationTempsDeTraitement) throws ControlException {
@@ -24,6 +25,7 @@ public class Producteur extends Acteur implements _Producteur {
 		this.identification = identification;
 		this.nombreDeMessages = nombreDeMessages;
 		this.buffer = buffer;
+		this.observateur = observateur;
 	}
 
 	@Override
@@ -72,14 +74,16 @@ public class Producteur extends Acteur implements _Producteur {
 			try {
 				// Creation du message a deposer
 				MessageX messageProd = new MessageX(i, identification);
-
+				
 				// Simulation du temps de traitement avec un sleep avant le
 				// depot
-				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
+				int tempsDeTraitement = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+				sleep(tempsDeTraitement);
 
 				// Depot du message
 				buffer.put(this, messageProd);
-
+				observateur.productionMessage(this, messageProd, tempsDeTraitement);
+				
 				if (TestProdCons.FLAG_TIME) {
 					Date d = new Date();
 					System.out.println("DEPOT : Message " + i + " by Producteur " + this.identification + " at "

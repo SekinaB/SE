@@ -1,4 +1,4 @@
-package jus.poc.prodcons.v4;
+package jus.poc.prodcons.v5;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,14 +44,19 @@ public class TestProdCons extends Simulateur {
 		// Initialisation des variables
 		init("jus/poc/prodcons/options/" + fileName);
 
+		// Initialisation de l'observateur
+		observateur.init(nbProd, nbCons, nbBuffer);
+
 		// Creation du buffer
-		ProdCons buffer = new ProdCons(nbBuffer, nbProd);
+		ProdCons buffer = new ProdCons(nbBuffer, nbProd, observateur);
 
 		// Creation des Producteurs
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction,
 					deviationTempsMoyenProduction);
+			//
+			observateur.newProducteur(currentProd);
 			if (FLAG_DEBUG) {
 				System.out.println("Prod " + i + " alive");
 			}
@@ -63,6 +68,8 @@ public class TestProdCons extends Simulateur {
 		for (int i = 0; i < nbCons; i++) {
 			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation,
 					deviationTempsMoyenConsommation);
+			//
+			observateur.newConsommateur(currentCons);
 			currentCons.setDaemon(true);
 			if (FLAG_DEBUG) {
 				System.out.println("Cons " + i + " alive");
