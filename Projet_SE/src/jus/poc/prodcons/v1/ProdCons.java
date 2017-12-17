@@ -36,8 +36,8 @@ public class ProdCons implements Tampon {
 	 * 
 	 * @return le message retire
 	 */
-	public synchronized Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		// Tant le buffer est vide, on attend
+	public synchronized Message get(_Consommateur cons) throws Exception, InterruptedException {
+		// Tant que le buffer est vide, on attend
 		while (enAttente() <= 0) {
 			try {
 				wait();
@@ -66,7 +66,7 @@ public class ProdCons implements Tampon {
 	 * 
 	 * @return le message retire
 	 */
-	public synchronized void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
+	public synchronized void put(_Producteur prod, Message message) throws Exception, InterruptedException {
 		// Tant le buffer est plein, on attend
 		while (taille() >= tailleMax) {
 			try {
@@ -76,7 +76,7 @@ public class ProdCons implements Tampon {
 			}
 		}
 		// On met message a la fin du buffer donc a l'indice taille()
-		buffer.add(taille(), (MessageX) arg1);
+		buffer.add(taille(), (MessageX) message);
 
 		// On augmente le nombre de message produits
 		nbProduced++;

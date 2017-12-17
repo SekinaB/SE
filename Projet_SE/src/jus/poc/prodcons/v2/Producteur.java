@@ -27,21 +27,41 @@ public class Producteur extends Acteur implements _Producteur {
 	}
 
 	@Override
+	/**
+	 * Getter of deviationTempsDeTraitement
+	 * 
+	 * @return deviationTempsDeTraitement of the Producteur
+	 */
 	public int deviationTempsDeTraitement() {
 		return deviationTempsDeTraitement;
 	}
 
 	@Override
+	/**
+	 * Getter of identification
+	 * 
+	 * @return identification of the Producteur
+	 */
 	public int identification() {
 		return identification;
 	}
 
 	@Override
+	/**
+	 * Getter of moyenneTempsDeTraitement
+	 * 
+	 * @return moyenneTempsDeTraitement of the Producteur
+	 */
 	public int moyenneTempsDeTraitement() {
 		return moyenneTempsDeTraitement;
 	}
 
 	@Override
+	/**
+	 * Getter of nombreDeMessages
+	 * 
+	 * @return nombreDeMessages of the Producteur
+	 */
 	public int nombreDeMessages() {
 		return nombreDeMessages;
 	}
@@ -50,18 +70,32 @@ public class Producteur extends Acteur implements _Producteur {
 	public void run() {
 		for (int i = 0; i < nombreDeMessages; i++) {
 			try {
+				// Creation du message a deposer
 				MessageX messageProd = new MessageX(i, identification);
-				buffer.put(this, messageProd);
-				Date d = new Date();
-				System.out.println("Le producteur " + this.identification + " produit le message " + i + " " + d.getTime());
+
+				// Simulation du temps de traitement avec un sleep avant le
+				// depot
 				sleep(Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement));
+
+				// Depot du message
+				buffer.put(this, messageProd);
+
+				if (TestProdCons.FLAG_TIME) {
+					Date d = new Date();
+					System.out.println(
+							"DEPOT : Message " + i + " by Producteur " + this.identification + " at " + (d.getTime() - TestProdCons.START_TIME.getTime()));
+				} else {
+					System.out.println("DEPOT : Message " + i + " by Producteur " + this.identification);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		// Le producteur a fini son execution : on met a jour la variable du
+		// buffer
 		buffer.finProducteur();
-		if (TestProdCons.DEBUG) {
-			System.out.println("Le producteur " + this.identification + " is dead ");
+		if (TestProdCons.FLAG_DEBUG) {
+			System.out.println("Producteur " + this.identification + " finished");
 
 		}
 	}
