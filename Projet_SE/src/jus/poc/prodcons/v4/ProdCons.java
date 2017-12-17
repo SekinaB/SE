@@ -19,14 +19,26 @@ public class ProdCons implements Tampon {
 	Semaphore notFull;
 	Semaphore notEmpty;
 	Semaphore mutex;
+	Semaphore[] producteurs;
+	private int nbCons;
+	Semaphore[] consommateurs;
 
-	public ProdCons(int nbBuffer, int nbProd) {
+	public ProdCons(int nbBuffer, int nbProd, int nbCons) {
 		this.buffer = new ArrayList<MessageX>();
 		// this.tailleMax = nbBuffer; UNUSED
 		this.nbProd = nbProd;
+		this.nbCons = nbCons;
 		notFull = new Semaphore(nbBuffer);
 		notEmpty = new Semaphore(0);
 		mutex = new Semaphore(1);
+		producteurs = new Semaphore[nbProd];
+		for (int i = 0; i < nbProd; i++) {
+			producteurs[i] = new Semaphore(1);
+		}
+		consommateurs = new Semaphore[nbCons];
+		for (int i = 0; i < nbCons; i++) {
+			consommateurs[i] = new Semaphore(1);
+		}
 	}
 
 	@Override
@@ -49,7 +61,7 @@ public class ProdCons implements Tampon {
 		// Si le buffer est vide, on attend
 		notEmpty.acquire();
 		if (TestProdCons.FLAG_DEBUG) {
-			System.out.println("GET NOTEMPTY ACQUIRED" + cons.identification());
+			System.out.println("GET NOTEMPTY ACQUIRED " + cons.identification());
 		}
 		// On bloque les autres processus
 		mutex.acquire();
@@ -57,20 +69,48 @@ public class ProdCons implements Tampon {
 			System.out.println("GET MUTEX ACQUIRED " + cons.identification());
 		}
 		synchronized (this) {
-			// On enleve le permier message du buffer donc celui a l'indice 0
-			message = buffer.remove(0);
+			// On prend le permier message du buffer donc celui a l'indice 0
+			message = buffer.get(0);
+			if (message.enUnExemplaire()) {
+				// On enleve le permier message du buffer
+				message = buffer.remove(0);
+				// On libere le producteur qui peut continuer sa production
+				producteurs[message.idProd()].release();
+				if (TestProdCons.FLAG_DEBUG) {
+					System.out.println("GET PROD RELEASED " + message.idProd());
+				}
+				for (int i = 0; i < nbCons; i++) {
+					consommateurs[i].release();
+				}
+				if (TestProdCons.FLAG_DEBUG) {
+					System.out.println("GET ALL CONSO RELEASED");
+				}
+			} else {
+				// On prend un exemplaire un message
+				message.lireExemplaire();
+				// On bloque le consommateur qui ne peut plus acceder au buffer
+				consommateurs[cons.identification()].acquire();
+				if (TestProdCons.FLAG_DEBUG) {
+					System.out.println("GET CONSO BLOCKED " + cons.identification());
+				}
+			}
 			// On initialise la date du retait du message
 			message.setDate();
 			// On augmente le nombre de message consommes
 			nbConsummed++;
+
 		}
 		// On libere le semaphore
 		mutex.release();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("GET MUTEX RELEASED " + cons.identification());
 		}
-		// On libere une case du buffer
-		notFull.release();
+		// On libere la case du buffer nbExemplaire fois
+		synchronized (this) {
+			for (int i = 0; i < message.getExemplaire(); i++) {
+				notFull.release();
+			}
+		}
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("GET NOTFULL RELEASED " + cons.identification());
 		}
@@ -85,6 +125,7 @@ public class ProdCons implements Tampon {
 	 */
 	public void put(_Producteur prod, Message message) throws Exception, InterruptedException {
 		// Si le buffer est plein, on attend
+		MessageX messageX = (MessageX) message;
 		notFull.acquire();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("PUT NOTFULL ACQUIRED " + prod.identification());
@@ -96,17 +137,26 @@ public class ProdCons implements Tampon {
 		}
 		synchronized (this) {
 			// On met message a la fin du buffer donc a l'indice taille()
-			buffer.add(taille(), (MessageX) message);
+			buffer.add(taille(), messageX);
 			// On met message a la fin du buffer donc a l'indice taille()
 			nbProduced++;
+			// On bloque le producteur qui ne peut plus acceder au buffer
+			producteurs[prod.identification()].acquire();
+			if (TestProdCons.FLAG_DEBUG) {
+				System.out.println("PUT PROD BLOCKED " + prod.identification());
+			}
 		}
 		// On libere le semaphore
 		mutex.release();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("PUT MUTEX RELEASED " + prod.identification());
 		}
-		// On avertit que le buffer n'est plus vide
-		notEmpty.release();
+		// On avertit que le buffer n'est plus vide nbExemplaire fois
+		synchronized (this) {
+			for (int i = 0; i < messageX.getExemplaire(); i++) {
+				notEmpty.release();
+			}
+		}
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("PUT NOTEMPTY RELEASED " + prod.identification());
 		}

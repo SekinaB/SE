@@ -15,15 +15,19 @@ public class Producteur extends Acteur implements _Producteur {
 	private int identification;
 	private int nombreDeMessages;
 	private ProdCons buffer;
+	private int deviationNombreMoyenNbExemplaire;
+	private int nombreMoyenNbExemplaire;
 
 	protected Producteur(ProdCons buffer, int identification, int nombreDeMessages, Observateur observateur,
-			int moyenneTempsDeTraitement, int deviationTempsDeTraitement) throws ControlException {
+			int moyenneTempsDeTraitement, int deviationTempsDeTraitement, int  nombreMoyenNbExemplaire, int deviationNombreMoyenNbExemplaire) throws ControlException {
 		super(Acteur.typeProducteur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
 		this.deviationTempsDeTraitement = deviationTempsDeTraitement;
 		this.moyenneTempsDeTraitement = moyenneTempsDeTraitement;
 		this.identification = identification;
 		this.nombreDeMessages = nombreDeMessages;
 		this.buffer = buffer;
+		this.deviationNombreMoyenNbExemplaire = deviationNombreMoyenNbExemplaire;
+		this.nombreMoyenNbExemplaire = nombreMoyenNbExemplaire;
 	}
 
 	@Override
@@ -71,7 +75,8 @@ public class Producteur extends Acteur implements _Producteur {
 		for (int i = 0; i < nombreDeMessages; i++) {
 			try {
 				// Creation du message a deposer
-				MessageX messageProd = new MessageX(i, identification);
+				int nbExemplaire = Aleatoire.valeur(nombreMoyenNbExemplaire, deviationNombreMoyenNbExemplaire);
+				MessageX messageProd = new MessageX(i, identification, nbExemplaire);
 
 				// Simulation du temps de traitement avec un sleep avant le
 				// depot
@@ -82,10 +87,10 @@ public class Producteur extends Acteur implements _Producteur {
 
 				if (TestProdCons.FLAG_TIME) {
 					Date d = new Date();
-					System.out.println("DEPOT : Message " + i + " by Producteur " + this.identification + " at "
+					System.out.println("DEPOT : " + nbExemplaire + " Message " + i + " by Producteur " + this.identification + " at "
 							+ (d.getTime() - TestProdCons.START_TIME.getTime()));
 				} else {
-					System.out.println("DEPOT : Message " + i + " by Producteur " + this.identification);
+					System.out.println("DEPOT : " + nbExemplaire + " Message " + i + " by Producteur " + this.identification);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -12,8 +12,8 @@ import jus.poc.prodcons.*;
 
 public class TestProdCons extends Simulateur {
 
-	public static boolean FLAG_DEBUG = false;
-	public static boolean FLAG_TIME = true;
+	public static boolean FLAG_DEBUG = true;
+	public static boolean FLAG_TIME = false;
 	public static Date START_TIME = new Date();
 
 	private int nbProd;
@@ -44,14 +44,19 @@ public class TestProdCons extends Simulateur {
 		// Initialisation des variables
 		init("jus/poc/prodcons/options/" + fileName);
 
+		if (nbCons < nombreMoyenNbExemplaire + deviationNombreMoyenNbExemplaire) {
+			System.out.println(
+					"Le nombre de consommateur doit être supérieur au nombre d'exemplaire de message possible");
+			System.exit(1);
+		}
 		// Creation du buffer
-		ProdCons buffer = new ProdCons(nbBuffer, nbProd);
+		ProdCons buffer = new ProdCons(nbBuffer, nbProd, nbCons);
 
 		// Creation des Producteurs
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction,
-					deviationTempsMoyenProduction);
+					deviationTempsMoyenProduction, nombreMoyenNbExemplaire, deviationNombreMoyenNbExemplaire);
 			if (FLAG_DEBUG) {
 				System.out.println("Prod " + i + " alive");
 			}

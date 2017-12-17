@@ -9,10 +9,12 @@ public class MessageX implements Message {
 	private int identifiantProducteur;
 	private int identifiantMessage;
 	public Date date;
+	private int nbExemplaire;
 
-	public MessageX(int identifiantMessage, int identifiantProducteur) {
+	public MessageX(int identifiantMessage, int identifiantProducteur, int nbExemplaire) {
 		this.identifiantProducteur = identifiantProducteur;
 		this.identifiantMessage = identifiantMessage;
+		this.nbExemplaire = nbExemplaire;
 	}
 
 	public String toString() {
@@ -26,6 +28,22 @@ public class MessageX implements Message {
 
 	public void setDate() {
 		this.date = new Date();
+	}
+	
+	public void lireExemplaire(){
+		this.nbExemplaire--;
+	}
+	
+	public int idProd(){
+		return this.identifiantProducteur;
+	}
+	
+	public boolean enUnExemplaire(){
+		return (this.nbExemplaire == 1);
+	}
+	
+	public int getExemplaire(){
+		return this.nbExemplaire;
 	}
 
 }
