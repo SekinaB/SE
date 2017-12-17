@@ -1,10 +1,11 @@
-package jus.poc.prodcons.v4;
+package jus.poc.prodcons.v6;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import jus.poc.prodcons.Message;
+import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Tampon;
 import jus.poc.prodcons._Consommateur;
 import jus.poc.prodcons._Producteur;
@@ -16,29 +17,28 @@ public class ProdCons implements Tampon {
 	private int nbProd; // Nombre de producteurs qui accedent au buffer
 	private int nbConsummed = 0; // Nombre de messages consommes pour le moment
 	private int nbProduced = 0; // Nombre de messages produits pour le moment
-	Semaphore notFull;
-	Semaphore notEmpty;
-	Semaphore mutex;
-	Semaphore[] producteurs;
-	private int nbCons;
-	Semaphore[] consommateurs;
+	private Semaphore notFull;
+	private Semaphore notEmpty;
+	private Semaphore mutex;
+	private Observateur observateur;
 
-	public ProdCons(int nbBuffer, int nbProd, int nbCons) {
+	public ProdCons(int nbBuffer, int nbProd, Observateur observateur) {
 		this.buffer = new ArrayList<MessageX>();
 		// this.tailleMax = nbBuffer; UNUSED
 		this.nbProd = nbProd;
-		this.nbCons = nbCons;
 		notFull = new Semaphore(nbBuffer);
 		notEmpty = new Semaphore(0);
 		mutex = new Semaphore(1);
-		producteurs = new Semaphore[nbProd];
-		for (int i = 0; i < nbProd; i++) {
-			producteurs[i] = new Semaphore(1);
-		}
-		consommateurs = new Semaphore[nbCons];
-		for (int i = 0; i < nbCons; i++) {
-			consommateurs[i] = new Semaphore(1);
-		}
+		this.observateur = observateur;
+	}
+
+	public ProdCons(int nbBuffer, int nbProd) {
+		this.buffer = new ArrayList<MessageX>();
+		// this.tailleMax = nbBuffer; UNUSED
+		this.nbProd = nbProd;
+		notFull = new Semaphore(nbBuffer);
+		notEmpty = new Semaphore(0);
+		mutex = new Semaphore(1);
 	}
 
 	@Override
@@ -58,15 +58,10 @@ public class ProdCons implements Tampon {
 	public Message get(_Consommateur cons) throws Exception, InterruptedException {
 		MessageX message;
 
-		// On bloque le consommateur qui ne peut plus acceder au buffer
-		consommateurs[cons.identification()].acquire();
-		if (TestProdCons.FLAG_DEBUG) {
-			System.out.println("GET CONSO BLOCKED " + cons.identification());
-		}
 		// Si le buffer est vide, on attend
 		notEmpty.acquire();
 		if (TestProdCons.FLAG_DEBUG) {
-			System.out.println("GET NOTEMPTY ACQUIRED " + cons.identification());
+			System.out.println("GET NOTEMPTY ACQUIRED" + cons.identification());
 		}
 		// On bloque les autres processus
 		mutex.acquire();
@@ -74,43 +69,21 @@ public class ProdCons implements Tampon {
 			System.out.println("GET MUTEX ACQUIRED " + cons.identification());
 		}
 		synchronized (this) {
-			// On prend le permier message du buffer donc celui a l'indice 0
-			message = buffer.get(0);
-			if (message.enUnExemplaire()) {
-				// On enleve le permier message du buffer
-				message = buffer.remove(0);
-				// On libere le producteur qui peut continuer sa production
-				producteurs[message.idProd()].release();
-				if (TestProdCons.FLAG_DEBUG) {
-					System.out.println("GET PROD RELEASED " + message.idProd());
-				}
-				for (int i = 0; i < nbCons; i++) {
-					consommateurs[i].release();
-				}
-				if (TestProdCons.FLAG_DEBUG) {
-					System.out.println("GET ALL CONSO RELEASED");
-				}
-			} else {
-				// On prend un exemplaire un message
-				message.lireExemplaire();
-			}
+			// On enleve le permier message du buffer donc celui a l'indice 0
+			message = buffer.remove(0);
 			// On initialise la date du retait du message
 			message.setDate();
 			// On augmente le nombre de message consommes
 			nbConsummed++;
-
+			observateur.retraitMessage(cons, message);
 		}
 		// On libere le semaphore
 		mutex.release();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("GET MUTEX RELEASED " + cons.identification());
 		}
-		// On libere la case du buffer nbExemplaire fois
-		synchronized (this) {
-			for (int i = 0; i < message.getExemplaire(); i++) {
-				notFull.release();
-			}
-		}
+		// On libere une case du buffer
+		notFull.release();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("GET NOTFULL RELEASED " + cons.identification());
 		}
@@ -124,14 +97,7 @@ public class ProdCons implements Tampon {
 	 * @return le message retire
 	 */
 	public void put(_Producteur prod, Message message) throws Exception, InterruptedException {
-
-		// On bloque le producteur qui ne peut plus acceder au buffer
-		producteurs[prod.identification()].acquire();
-		if (TestProdCons.FLAG_DEBUG) {
-			System.out.println("PUT PROD BLOCKED " + prod.identification());
-		}
 		// Si le buffer est plein, on attend
-		MessageX messageX = (MessageX) message;
 		notFull.acquire();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("PUT NOTFULL ACQUIRED " + prod.identification());
@@ -143,21 +109,18 @@ public class ProdCons implements Tampon {
 		}
 		synchronized (this) {
 			// On met message a la fin du buffer donc a l'indice taille()
-			buffer.add(taille(), messageX);
+			buffer.add(taille(), (MessageX) message);
+			observateur.depotMessage(prod, message);
 			// On met message a la fin du buffer donc a l'indice taille()
-			nbProduced += messageX.getExemplaire();
+			nbProduced++;
 		}
 		// On libere le semaphore
 		mutex.release();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("PUT MUTEX RELEASED " + prod.identification());
 		}
-		// On avertit que le buffer n'est plus vide nbExemplaire fois
-		synchronized (this) {
-			for (int i = 0; i < messageX.getExemplaire(); i++) {
-				notEmpty.release();
-			}
-		}
+		// On avertit que le buffer n'est plus vide
+		notEmpty.release();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("PUT NOTEMPTY RELEASED " + prod.identification());
 		}
@@ -204,5 +167,4 @@ public class ProdCons implements Tampon {
 	public int getConsummed() {
 		return this.nbConsummed;
 	}
-
 }
