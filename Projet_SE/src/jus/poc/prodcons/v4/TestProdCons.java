@@ -12,9 +12,11 @@ import jus.poc.prodcons.*;
 
 public class TestProdCons extends Simulateur {
 
-	public static boolean FLAG_DEBUG = true;
-	public static boolean FLAG_TIME = false;
-	public static Date START_TIME = new Date();
+	public static boolean FLAG_DEBUG = false; // Flag a utilise pour avoir une
+												// trace
+	public static boolean FLAG_TIME = true; // Flag a utilise pour avoir le
+											// temps de chaque action
+	public static Date START_TIME = new Date(); // heure de debut de l'execution
 
 	private int nbProd;
 	private int nbCons;
@@ -44,6 +46,8 @@ public class TestProdCons extends Simulateur {
 		// Initialisation des variables
 		init("jus/poc/prodcons/options/" + fileName);
 
+		// Si on peut avoir un nombre d'exemplaire supérieur au nombre de
+		// consommateur, on aura un bloquage automatique a l'execution.
 		if (nbCons < nombreMoyenNbExemplaire + deviationNombreMoyenNbExemplaire) {
 			System.out.println(
 					"Le nombre de consommateur doit être supérieur au nombre d'exemplaire de message possible");
@@ -87,7 +91,8 @@ public class TestProdCons extends Simulateur {
 
 		// Condition de Terminaison:
 		// On laisse les Consommateurs s'executer tant que le buffer n'est pas
-		// vide
+		// vide ou que le nombre de message consomme et produit ne sont pas
+		// egals
 		do {
 			Thread.yield();
 		} while (buffer.enAttente() > 0 || buffer.getConsummed() != buffer.getProduced());

@@ -75,15 +75,17 @@ public class Producteur extends Acteur implements _Producteur {
 				// Creation du message a deposer
 				MessageX messageProd = new MessageX(i, identification);
 				
-				// Simulation du temps de traitement avec un sleep avant le
-				// depot
+				// Simulation du temps de traitement avec un sleep 
 				int tempsDeTraitement = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
 				sleep(tempsDeTraitement);
 
+				
+				//Control avec l'observateur
+				observateur.productionMessage(this, messageProd, tempsDeTraitement);
 				// Depot du message
 				buffer.put(this, messageProd);
-				observateur.productionMessage(this, messageProd, tempsDeTraitement);
 				
+				// Affichage d'un message qui assure le depot 
 				if (TestProdCons.FLAG_TIME) {
 					Date d = new Date();
 					System.out.println("DEPOT : Message " + i + " by Producteur " + this.identification + " at "
@@ -95,8 +97,7 @@ public class Producteur extends Acteur implements _Producteur {
 				e.printStackTrace();
 			}
 		}
-		// Le producteur a fini son execution : on met a jour la variable du
-		// buffer
+		// Producteur fini l'execution => on met a jour la variable du buffer
 		buffer.finProducteur();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("Producteur " + this.identification + " finished");

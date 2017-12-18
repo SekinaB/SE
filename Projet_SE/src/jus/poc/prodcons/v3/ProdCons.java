@@ -13,7 +13,6 @@ import jus.poc.prodcons._Producteur;
 public class ProdCons implements Tampon {
 
 	private List<MessageX> buffer;
-	// private int tailleMax; UNUSED
 	private int nbProd; // Nombre de producteurs qui accedent au buffer
 	private int nbConsummed = 0; // Nombre de messages consommes pour le moment
 	private int nbProduced = 0; // Nombre de messages produits pour le moment
@@ -24,7 +23,6 @@ public class ProdCons implements Tampon {
 
 	public ProdCons(int nbBuffer, int nbProd, Observateur observateur) {
 		this.buffer = new ArrayList<MessageX>();
-		// this.tailleMax = nbBuffer; UNUSED
 		this.nbProd = nbProd;
 		notFull = new Semaphore(nbBuffer);
 		notEmpty = new Semaphore(0);
@@ -34,7 +32,6 @@ public class ProdCons implements Tampon {
 
 	public ProdCons(int nbBuffer, int nbProd) {
 		this.buffer = new ArrayList<MessageX>();
-		// this.tailleMax = nbBuffer; UNUSED
 		this.nbProd = nbProd;
 		notFull = new Semaphore(nbBuffer);
 		notEmpty = new Semaphore(0);
@@ -75,6 +72,7 @@ public class ProdCons implements Tampon {
 			message.setDate();
 			// On augmente le nombre de message consommes
 			nbConsummed++;
+			// Control avec l'observateur
 			observateur.retraitMessage(cons, message);
 		}
 		// On libere le semaphore
@@ -110,6 +108,7 @@ public class ProdCons implements Tampon {
 		synchronized (this) {
 			// On met message a la fin du buffer donc a l'indice taille()
 			buffer.add(taille(), (MessageX) message);
+			// Control avec l'observateur
 			observateur.depotMessage(prod, message);
 			// On met message a la fin du buffer donc a l'indice taille()
 			nbProduced++;

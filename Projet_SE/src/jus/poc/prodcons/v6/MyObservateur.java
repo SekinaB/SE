@@ -11,8 +11,6 @@ import jus.poc.prodcons._Producteur;
 
 public class MyObservateur {
 	private boolean coherent;
-	private boolean operationnel;
-	private static String ControlClass;
 
 	private int nbproducteurs;
 	private int nbconsommateurs;
@@ -30,6 +28,7 @@ public class MyObservateur {
 	}
 
 	public void init(int nbproducteurs, int nbconsommateurs, int nbBuffers) throws ControlException {
+		// Verification des parametres
 		if (nbproducteurs <= 0 || nbconsommateurs <= 0 || nbBuffers <= 0) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "init");

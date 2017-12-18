@@ -74,6 +74,7 @@ public class ProdCons implements Tampon {
 				message.setDate();
 				// On augmente le nombre de message consommes
 				nbConsummed++;
+				// Control avec l'observateur
 				observateur.retraitMessage(cons, message);
 			}
 			// On signalise que le buffer n'est plus remplis
@@ -111,6 +112,7 @@ public class ProdCons implements Tampon {
 			synchronized (this) {
 				// On met message a la fin du buffer donc a l'indice taille()
 				buffer.add(taille(), (MessageX) message);
+				// Control avec l'observateur
 				observateur.depotMessage(prod, message);
 				// On met message a la fin du buffer donc a l'indice taille()
 				nbProduced++;

@@ -12,9 +12,9 @@ import jus.poc.prodcons.*;
 
 public class TestProdCons extends Simulateur {
 
-	public static boolean FLAG_DEBUG = false;
-	public static boolean FLAG_TIME = true;
-	public static Date START_TIME = new Date();
+	public static boolean FLAG_DEBUG = false; // Flag a utilise pour avoir une trace
+	public static boolean FLAG_TIME = true; // Flag a utilise pour avoir le temps de chaque action
+	public static Date START_TIME = new Date(); // heure de debut de l'execution
 
 	private int nbProd;
 	private int nbCons;
@@ -25,6 +25,7 @@ public class TestProdCons extends Simulateur {
 	private int deviationNombreMoyenDeProduction;
 	private int tempsMoyenConsommation;
 	private int deviationTempsMoyenConsommation;
+	// Notre Observateur
 	private MyObservateur myobs = new MyObservateur();
 
 	private int nombreMoyenNbExemplaire;
@@ -45,7 +46,7 @@ public class TestProdCons extends Simulateur {
 		// Initialisation des variables
 		init("jus/poc/prodcons/options/" + fileName);
 
-		// Initialisation de l'observateur
+		// Initialisation de notre observateur
 		myobs.init(nbProd, nbCons, nbBuffer);
 
 		// Creation du buffer
@@ -56,7 +57,7 @@ public class TestProdCons extends Simulateur {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, myobs, observateur, tempsMoyenProduction,
 					deviationTempsMoyenProduction);
-			//
+			// Ajout le Producteur dans l'observateur
 			myobs.newProducteur(currentProd);
 			if (FLAG_DEBUG) {
 				System.out.println("Prod " + i + " alive");
@@ -69,7 +70,7 @@ public class TestProdCons extends Simulateur {
 		for (int i = 0; i < nbCons; i++) {
 			Consommateur currentCons = new Consommateur(buffer, i, myobs, observateur, tempsMoyenConsommation,
 					deviationTempsMoyenConsommation);
-			//
+			// Ajout le Consommateur dans l'observateur
 			myobs.newConsommateur(currentCons);
 			currentCons.setDaemon(true);
 			if (FLAG_DEBUG) {
@@ -90,10 +91,10 @@ public class TestProdCons extends Simulateur {
 
 		// Condition de Terminaison:
 		// On laisse les Consommateurs s'executer tant que le buffer n'est pas
-		// vide
+		// vide ou que le nombre de message consomme et produit ne sont pas egals
 		do {
 			Thread.yield();
-		} while (buffer.enAttente() > 0);
+		} while (buffer.enAttente() > 0 || buffer.getConsummed() != buffer.getProduced());
 
 		if (FLAG_DEBUG) {
 			System.out.println("Contenu du buffer: " + buffer.taille());

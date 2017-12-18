@@ -12,20 +12,18 @@ import jus.poc.prodcons._Producteur;
 public class ProdCons implements Tampon {
 
 	private List<MessageX> buffer;
-	// private int tailleMax; UNUSED
 	private int nbProd; // Nombre de producteurs qui accedent au buffer
+	private int nbCons; // Nombre de consommateurs qui accedent au buffer
 	private int nbConsummed = 0; // Nombre de messages consommes pour le moment
 	private int nbProduced = 0; // Nombre de messages produits pour le moment
 	Semaphore notFull;
 	Semaphore notEmpty;
 	Semaphore mutex;
-	Semaphore[] producteurs;
-	private int nbCons;
-	Semaphore[] consommateurs;
+	Semaphore[] producteurs; // Semaphore controlant les producteurs
+	Semaphore[] consommateurs; // Semaphore controlant les consommateurs
 
 	public ProdCons(int nbBuffer, int nbProd, int nbCons) {
 		this.buffer = new ArrayList<MessageX>();
-		// this.tailleMax = nbBuffer; UNUSED
 		this.nbProd = nbProd;
 		this.nbCons = nbCons;
 		notFull = new Semaphore(nbBuffer);
@@ -84,6 +82,7 @@ public class ProdCons implements Tampon {
 				if (TestProdCons.FLAG_DEBUG) {
 					System.out.println("GET PROD RELEASED " + message.idProd());
 				}
+				// On libere les consommateurs
 				for (int i = 0; i < nbCons; i++) {
 					consommateurs[i].release();
 				}

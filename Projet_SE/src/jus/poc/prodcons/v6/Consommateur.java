@@ -77,7 +77,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 				// Recuperation du message
 				messageCons = (MessageX) buffer.get(this);
 				
-				// Control notre observateur
+				// Control avec notre observateur
 				myobs.consommationMessage(this, messageCons, tempsDeTraitement);
 				
 				// Traitement du message
