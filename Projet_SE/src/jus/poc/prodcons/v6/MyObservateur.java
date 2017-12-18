@@ -49,10 +49,12 @@ public class MyObservateur {
 	}
 
 	public final void productionMessage(_Producteur p, Message m, int tempsDeTraitement) throws ControlException {
+		// Verification des parametres
 		if (p == null || m == null || tempsDeTraitement <= 0) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "productionMessage");
 		}
+		// Verification de la presence de p dans la liste de producteurs
 		if (!listProd.contains(p)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "productionMessage");
@@ -61,20 +63,19 @@ public class MyObservateur {
 	}
 
 	public final void depotMessage(_Producteur p, Message m) throws ControlException {
-
-		// verifier que les arguments sont valides
+		// Verification des parametres
 		if (p == null || m == null) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "depotMessage");
 		}
 
-		// verifier que le producteur existe dans listProd
+		// Verification de la presence de p dans la liste de producteurs
 		if (!listProd.contains(p)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "depotMessage");
 		}
 
-		// verifier si le producteur n'a pas deja depose le message m
+		// Verification de la non repetition d'un meme message
 		if (!messageProd.remove(p, m)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "depotMessage");
@@ -82,51 +83,59 @@ public class MyObservateur {
 
 		messageProd.put(p, m);
 
-		if (buffer.size() > nbBuffers) {
+		// Verification de la taille du buffer
+		if (buffer.size() >= nbBuffers) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "depotMessage");
 		}
 
+		// Ajout du message
 		buffer.add(m);
 	}
 
 	public final void retraitMessage(_Consommateur c, Message m) throws ControlException {
-		// verifier que les arguments sont valides
+		// Verification des parametres
 		if (c == null || m == null) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "consommationMessage");
 		}
+
+		// Verification de la presence de p dans la liste de producteurs et du
+		// message m dans le liste des message produits
 		if (!listCons.contains(c) || !messageProd.contains(m)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "retraitMessage");
 		}
+		
 		Message message;
-
+		// Retrait du premier message du buffer
 		message = buffer.remove(0);
+		
+		// Verification de la valeur du message
 		if (message != m) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "consommationMessage");
 		}
-		
+
+		// Ajout du message dans la liste des messages consommes
 		messageCons.put(c, m);
 
 	}
 
 	public void consommationMessage(_Consommateur c, Message m, int tempsDeTraitement) throws ControlException {
-
-		// verifier que les arguments ne sont pas vides
+		// Verification des parametres
 		if (c == null || m == null || tempsDeTraitement <= 0) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "consommationMessage");
 		}
 
-		// verifier que le consommateur existe dans listCons
+		// Verification de la presence de c dans la liste des consommateurs
 		if (!listCons.contains(c)) {
 			coherent = false;
 			throw new ControlException(c.getClass(), "consommationMessage");
 		}
 
-		// verifier que le message m a été retiré de la Hashtable messageCons
+		// Verification de la presence de m dans messageCons
 		if (!messageCons.remove(c, m)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "consommationMessage");
@@ -135,18 +144,22 @@ public class MyObservateur {
 	}
 
 	public final void newProducteur(_Producteur p) throws ControlException {
+		// Verification des parametres
 		if (listProd.size() == nbproducteurs || p == null || listProd.contains(p)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "newProducteur");
 		}
+		// Ajout de p dans la liste des producteurs
 		listProd.add(p);
 	}
 
 	public final void newConsommateur(_Consommateur c) throws ControlException {
+		// Verification des parametres
 		if (listCons.size() == nbconsommateurs || c == null || listCons.contains(c)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "newConsommateur");
 		}
+		// Ajout de c dans la liste des  consommateurs
 		listCons.add(c);
 	}
 }
