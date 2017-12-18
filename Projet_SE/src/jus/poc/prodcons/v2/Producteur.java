@@ -91,8 +91,7 @@ public class Producteur extends Acteur implements _Producteur {
 				e.printStackTrace();
 			}
 		}
-		// Le producteur a fini son execution : on met a jour la variable du
-		// buffer
+		// Producteur fini l'execution => on met a jour la variable du buffer
 		buffer.finProducteur();
 		if (TestProdCons.FLAG_DEBUG) {
 			System.out.println("Producteur " + this.identification + " finished");

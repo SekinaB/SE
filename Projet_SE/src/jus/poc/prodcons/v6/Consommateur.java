@@ -68,15 +68,16 @@ public class Consommateur extends Acteur implements _Consommateur {
 	@Override
 	public void run() {
 		MessageX messageCons;
-		while ((buffer.enAttente() > 0) || buffer.producteurAlive()) {
+		while (true) {
 			try {
-				// Simulation du temps de traitement avec un sleep avant le
-				// retrait
+				// Simulation du temps de traitement avec un sleep
 				int tempsDeTraitement = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
 				sleep(tempsDeTraitement);
 				
 				// Recuperation du message
 				messageCons = (MessageX) buffer.get(this);
+				
+				// Control notre observateur
 				myobs.consommationMessage(this, messageCons, tempsDeTraitement);
 				
 				// Traitement du message

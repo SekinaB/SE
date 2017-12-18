@@ -6,10 +6,10 @@ import jus.poc.prodcons.Message;
 
 public class MessageX implements Message {
 
-	private int identifiantProducteur;
-	private int identifiantMessage;
-	public Date date;
-	private int nbExemplaire;
+	private int identifiantProducteur; // identifiant du producteur
+	private int identifiantMessage; // identifiant du message dans ceux du prod
+	public Date date; // temps de retrait de message
+	private int nbExemplaire; // nombre d'exemplaire du message dans le buffer
 
 	public MessageX(int identifiantMessage, int identifiantProducteur, int nbExemplaire) {
 		this.identifiantProducteur = identifiantProducteur;
@@ -17,6 +17,13 @@ public class MessageX implements Message {
 		this.nbExemplaire = nbExemplaire;
 	}
 
+	/**
+	 * Retourne une chaine caracterisant le message contenant sont identifiant
+	 * de l'identifiant du son producteur; Si FLAG_TIME == true, on aura aussi
+	 * le temps du retrait du message.
+	 * 
+	 * @return chaine de caractere
+	 */
 	public String toString() {
 		if (TestProdCons.FLAG_TIME) {
 			return "Message " + identifiantMessage + " of Producteur " + identifiantProducteur + " at "
@@ -26,23 +33,44 @@ public class MessageX implements Message {
 		}
 	}
 
+	/**
+	 * Initalise le variable date à l'heure de l'appel de la fonction
+	 */
 	public void setDate() {
 		this.date = new Date();
 	}
-	
-	public void lireExemplaire(){
+
+	/**
+	 * Decrement le variable nbExemplaire a l'appel de la fonction
+	 */
+	public void lireExemplaire() {
 		this.nbExemplaire--;
 	}
-	
-	public int idProd(){
+
+	/**
+	 * Retourne l'identifiant du producteur, createur du message
+	 * 
+	 * @return int identifiant du producteur
+	 */
+	public int idProd() {
 		return this.identifiantProducteur;
 	}
-	
-	public boolean enUnExemplaire(){
+
+	/**
+	 * Indique si il ne reste qu'un seul exemplaire du message dans le buffer
+	 * 
+	 * @return true si nbExemplaire == 1 et false sinon
+	 */
+	public boolean enUnExemplaire() {
 		return (this.nbExemplaire == 1);
 	}
-	
-	public int getExemplaire(){
+
+	/**
+	 * Retourne le nombre d'exemplaire du message restant dans le buffer
+	 * 
+	 * @return nombre d'exemplaire restant
+	 */
+	public int getExemplaire() {
 		return this.nbExemplaire;
 	}
 
