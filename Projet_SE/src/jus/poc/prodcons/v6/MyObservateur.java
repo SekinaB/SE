@@ -83,7 +83,7 @@ public class MyObservateur {
 
 		messageProd.put(p, m);
 
-		if (buffer.size() >= nbBuffers) {
+		if (buffer.size() > nbBuffers) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "depotMessage");
 		}
@@ -97,21 +97,20 @@ public class MyObservateur {
 			coherent = false;
 			throw new ControlException(this.getClass(), "consommationMessage");
 		}
-		if (!listCons.contains(c) || !messageProd.contains(m)){
+		if (!listCons.contains(c) || !messageProd.contains(m)) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "retraitMessage");
 		}
 		Message message;
 
-		message = buffer.get(0);
+		message = buffer.remove(0);
 		if (message != m) {
 			coherent = false;
 			throw new ControlException(this.getClass(), "consommationMessage");
 		}
-
+		
 		messageCons.put(c, m);
 
-		
 	}
 
 	public void consommationMessage(_Consommateur c, Message m, int tempsDeTraitement) throws ControlException {
