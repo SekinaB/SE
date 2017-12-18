@@ -13,16 +13,16 @@ public class Consommateur extends Acteur implements _Consommateur {
 	private int identification;
 	private int nombreDeMessages;
 	private ProdCons buffer;
-	private Observateur observateur;
+	private MyObservateur myobs;
 
-	protected Consommateur(ProdCons buffer, int identification, Observateur observateur, int moyenneTempsDeTraitement,
+	protected Consommateur(ProdCons buffer, int identification, MyObservateur myobs, Observateur observateur, int moyenneTempsDeTraitement,
 			int deviationTempsDeTraitement) throws ControlException {
 		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
 		this.deviationTempsDeTraitement = deviationTempsDeTraitement;
 		this.moyenneTempsDeTraitement = moyenneTempsDeTraitement;
 		this.identification = identification;
 		this.buffer = buffer;
-		this.observateur = observateur;
+		this.myobs = myobs;
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 				
 				// Recuperation du message
 				messageCons = (MessageX) buffer.get(this);
-				observateur.consommationMessage(this, messageCons, tempsDeTraitement);
+				myobs.consommationMessage(this, messageCons, tempsDeTraitement);
 				
 				// Traitement du message
 				System.out.println("RETRAIT : " + messageCons.toString() + " by Consommateur " + this.identification);

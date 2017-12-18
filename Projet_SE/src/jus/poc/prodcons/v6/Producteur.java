@@ -15,9 +15,9 @@ public class Producteur extends Acteur implements _Producteur {
 	private int identification;
 	private int nombreDeMessages;
 	private ProdCons buffer;
-	private Observateur observateur;
+	private MyObservateur myobs;
 
-	protected Producteur(ProdCons buffer, int identification, int nombreDeMessages, Observateur observateur,
+	protected Producteur(ProdCons buffer, int identification, int nombreDeMessages, MyObservateur myobs, Observateur observateur,
 			int moyenneTempsDeTraitement, int deviationTempsDeTraitement) throws ControlException {
 		super(Acteur.typeProducteur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
 		this.deviationTempsDeTraitement = deviationTempsDeTraitement;
@@ -25,7 +25,7 @@ public class Producteur extends Acteur implements _Producteur {
 		this.identification = identification;
 		this.nombreDeMessages = nombreDeMessages;
 		this.buffer = buffer;
-		this.observateur = observateur;
+		this.myobs = myobs;
 	}
 
 	@Override
@@ -81,8 +81,8 @@ public class Producteur extends Acteur implements _Producteur {
 				sleep(tempsDeTraitement);
 
 				// Depot du message
+				myobs.productionMessage(this, messageProd, tempsDeTraitement);
 				buffer.put(this, messageProd);
-				observateur.productionMessage(this, messageProd, tempsDeTraitement);
 				
 				if (TestProdCons.FLAG_TIME) {
 					Date d = new Date();

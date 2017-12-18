@@ -25,6 +25,7 @@ public class TestProdCons extends Simulateur {
 	private int deviationNombreMoyenDeProduction;
 	private int tempsMoyenConsommation;
 	private int deviationTempsMoyenConsommation;
+	private MyObservateur myobs = new MyObservateur();
 
 	private int nombreMoyenNbExemplaire;
 	private int deviationNombreMoyenNbExemplaire;
@@ -45,18 +46,18 @@ public class TestProdCons extends Simulateur {
 		init("jus/poc/prodcons/options/" + fileName);
 
 		// Initialisation de l'observateur
-		observateur.init(nbProd, nbCons, nbBuffer);
+		myobs.init(nbProd, nbCons, nbBuffer);
 
 		// Creation du buffer
-		ProdCons buffer = new ProdCons(nbBuffer, nbProd, observateur);
+		ProdCons buffer = new ProdCons(nbBuffer, nbProd, myobs);
 
 		// Creation des Producteurs
 		for (int i = 0; i < nbProd; i++) {
 			int nombreDeProduction = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
-			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, observateur, tempsMoyenProduction,
+			Producteur currentProd = new Producteur(buffer, i, nombreDeProduction, myobs, observateur, tempsMoyenProduction,
 					deviationTempsMoyenProduction);
 			//
-			observateur.newProducteur(currentProd);
+			myobs.newProducteur(currentProd);
 			if (FLAG_DEBUG) {
 				System.out.println("Prod " + i + " alive");
 			}
@@ -66,10 +67,10 @@ public class TestProdCons extends Simulateur {
 
 		// Creation des Consommateurs
 		for (int i = 0; i < nbCons; i++) {
-			Consommateur currentCons = new Consommateur(buffer, i, observateur, tempsMoyenConsommation,
+			Consommateur currentCons = new Consommateur(buffer, i, myobs, observateur, tempsMoyenConsommation,
 					deviationTempsMoyenConsommation);
 			//
-			observateur.newConsommateur(currentCons);
+			myobs.newConsommateur(currentCons);
 			currentCons.setDaemon(true);
 			if (FLAG_DEBUG) {
 				System.out.println("Cons " + i + " alive");

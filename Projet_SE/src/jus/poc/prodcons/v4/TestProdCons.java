@@ -90,7 +90,7 @@ public class TestProdCons extends Simulateur {
 		// vide
 		do {
 			Thread.yield();
-		} while (buffer.enAttente() > 0);
+		} while (buffer.enAttente() > 0 || buffer.getConsummed() != buffer.getProduced());
 
 		if (FLAG_DEBUG) {
 			System.out.println("Contenu du buffer: " + buffer.taille());
